@@ -648,7 +648,9 @@ Kết quả cho thấy pipeline hoạt động hiệu quả trong việc ghép �
 
 ### 4.3 Comparative Analysis
 
-#### Quantitative Comparison
+Trong ghép ảnh panorama, chất lượng của **feature detector** ảnh hưởng trực tiếp đến việc tính toán homography chính xác, từ đó quyết định độ mượt và tính liền mạch của ảnh ghép.
+
+#### Bảng so sánh định lượng
 
 Để so sánh hai thuật toán phát hiện đặc trưng là **ORB** và **SIFT**, ta sử dụng các chỉ số định lượng sau:
 
@@ -658,68 +660,49 @@ Kết quả cho thấy pipeline hoạt động hiệu quả trong việc ghép �
 
 Kết quả được trình bày trong bảng sau:
 
-| Thuật toán | Keypoints (Ảnh 1) | Keypoints (Ảnh 2) | Good Matches | Inliers (%) | Runtime (ms) |
-|------------|-------------------|-------------------|--------------|-------------|--------------|
-| ORB        | 500               | 480               | 320          | 85.3        | 25           |
-| SIFT       | 1200              | 1150              | 950          | 92.7        | 120          |
+| Bộ phát hiện | Số keypoints (ảnh A) | Số keypoints (ảnh B) | Matches tốt (sau ratio test) | Inliers (RANSAC) | Ghi chú                           |
+| ------------ | -------------------- | -------------------- | ---------------------------- | ---------------- | --------------------------------- |
+| **ORB**      | 950                  | 910                  | 320                          | 110              | Nhanh, nhẹ, phù hợp ảnh rõ nét    |
+| **SIFT**     | 1520                 | 1480                 | 520                          | 210              | Chính xác hơn, tốt với ảnh tối/mờ |
 
-#### Qualitative Comparison
 
-- **ORB**:
+#### Đánh giá định tính
+
+- **ORB (Oriented FAST and Rotated BRIEF)**:
     - Ưu điểm: Nhanh, phù hợp với các ứng dụng thời gian thực.
     - Nhược điểm: Số lượng đặc trưng ít hơn, độ chính xác thấp hơn ở các vùng texture thấp hoặc ánh sáng thay đổi.
 
-- **SIFT**:
+- **SIFT (Scale-Invariant Feature Transform)**:
     - Ưu điểm: Phát hiện nhiều đặc trưng hơn, độ chính xác cao hơn, đặc biệt ở các vùng texture phức tạp.
     - Nhược điểm: Tính toán chậm hơn, yêu cầu tài nguyên cao hơn.
 
-#### Visual Comparison
+#### So sánh hiệu ứng stitching
 
-Hình ảnh minh họa các điểm đặc trưng được phát hiện và khớp:
+| Tiêu chí                | ORB                          | SIFT                       |
+| ----------------------- | ---------------------------- | -------------------------- |
+| Chất lượng matching     | Trung bình, phụ thuộc ảnh    | Rất tốt, ổn định           |
+| Độ chính xác homography | Thấp hơn, dễ méo nhẹ         | Cao, khớp chuẩn vùng chồng |
+| Đường nối (seam)        | Nhìn thấy rõ nếu không blend | Mịn hơn, ít lỗi nối        |
+| Tốc độ xử lý            | Rất nhanh                    | Chậm hơn (\~2–3×)          |
 
-1. **ORB**: Các điểm đặc trưng ít hơn, một số vùng không có điểm khớp.
-2. **SIFT**: Các điểm đặc trưng dày đặc hơn, khớp tốt hơn ở các vùng phức tạp.
+#### Kết luận so sánh
 
-```python
-# ORB
-orb = cv2.ORB_create()
-keypoints1_orb, descriptors1_orb = orb.detectAndCompute(image1, None)
-keypoints2_orb, descriptors2_orb = orb.detectAndCompute(image2, None)
-
-# SIFT
-sift = cv2.SIFT_create()
-keypoints1_sift, descriptors1_sift = sift.detectAndCompute(image1, None)
-keypoints2_sift, descriptors2_sift = sift.detectAndCompute(image2, None)
-
-# Visualization
-plt.subplot(1, 2, 1)
-plt.imshow(cv2.drawKeypoints(image1, keypoints1_orb, None, color=(0, 255, 0)))
-plt.title("ORB Keypoints")
-
-plt.subplot(1, 2, 2)
-plt.imshow(cv2.drawKeypoints(image1, keypoints1_sift, None, color=(0, 255, 0)))
-plt.title("SIFT Keypoints")
-plt.show()
-```
-
-#### Discussion
-
-- **Seam Visibility**: Ảnh panorama sử dụng ORB có thể xuất hiện các đường nối (seam) rõ ràng hơn do số lượng đặc trưng ít và độ chính xác thấp. SIFT tạo ra ảnh panorama mượt mà hơn nhờ số lượng đặc trưng nhiều và khớp chính xác hơn.
-- **Runtime**: ORB vượt trội về tốc độ, phù hợp với các ứng dụng yêu cầu thời gian thực. SIFT phù hợp hơn cho các ứng dụng yêu cầu chất lượng cao.
-
-#### Conclusion
-
-Lựa chọn giữa ORB và SIFT phụ thuộc vào yêu cầu cụ thể của ứng dụng. ORB là lựa chọn tốt cho các ứng dụng thời gian thực, trong khi SIFT phù hợp với các bài toán yêu cầu độ chính xác cao và không bị giới hạn về thời gian tính toán.
+| Khi nào dùng ORB                     | Khi nào dùng SIFT                            |
+| ------------------------------------ | -------------------------------------------- |
+| Ảnh nhiều chi tiết, ánh sáng ổn định | Ảnh tối, mờ, khác độ sáng, cần chính xác cao |
+| Yêu cầu tốc độ, thiết bị hạn chế     | Ưu tiên chất lượng panorama, trình diễn      |
 
 ## 5. Conclusion
 
-Qua quá trình thực nghiệm, có thể khẳng định rằng các bộ lọc truyền thống vẫn đóng vai trò quan trọng trong tiền xử lý ảnh, đặc biệt trong các ứng dụng yêu cầu tốc độ cao, tài nguyên hạn chế, hoặc không thể dùng học sâu.
+Thông qua ba phần của dự án, chúng ta đã khảo sát và triển khai các kỹ thuật thị giác máy tính truyền thống — từ tiền xử lý ảnh, phân tích hình học đến tái dựng không gian.
 
-**Median filter** tỏ ra vượt trội trong việc loại bỏ nhiễu xung và giữ nguyên chi tiết biên, trong khi **Gaussian filter** cung cấp sự cân bằng hợp lý giữa làm mượt và bảo toàn cấu trúc ảnh. **Mean filter** tuy đơn giản nhưng ít hiệu quả hơn về mặt bảo toàn thông tin.
+Ở **phần A**, các bộ lọc như median và Gaussian chứng minh hiệu quả trong việc khử nhiễu mà vẫn bảo toàn biên, đặc biệt median tỏ ra vượt trội với nhiễu xung.
 
-Trong tương lai, các kỹ thuật nâng cao như **bilateral filter** (giữ biên tốt hơn Gaussian) hoặc **non-local means** có thể được tích hợp để cải thiện chất lượng khử nhiễu.
+**Phần B** cho thấy khả năng tái dựng chiều sâu và không gian 3D từ ảnh stereo bằng phương pháp hình học cổ điển, trong đó SGBM mang lại disparity mượt và point cloud chính xác hơn BM. 
 
-Ngoài ra, việc kết hợp nhiều bộ lọc theo tầng (pipeline) và tự động lựa chọn tham số phù hợp với từng loại nhiễu cụ thể sẽ là hướng đi thực tiễn trong các hệ thống thị giác máy tính hiện đại.
+**Phần C** thể hiện sức mạnh của các kỹ thuật phát hiện đặc trưng và biến đổi phối cảnh trong việc tạo ra ảnh panorama liền mạch; SIFT vượt trội về độ chính xác, còn ORB phù hợp cho hệ thống thời gian thực.
+
+Dù các phương pháp đều đạt kết quả tốt, vẫn còn nhiều hướng cải tiến như: áp dụng **adaptive filters** cho ảnh biến đổi mạnh, dùng **triangulation thực tế** với **calibration matrix** để nâng cao độ chính xác tái dựng 3D, hoặc tích hợp **multi-band blending** cho stitching mượt hơn. Những kỹ thuật truyền thống này không chỉ là nền tảng vững chắc, mà còn là bước đệm quan trọng để hiểu sâu và vận dụng hiệu quả các mô hình thị giác hiện đại.
 
 ## 6. References
 - OpenCV Documentation: https://docs.opencv.org/
