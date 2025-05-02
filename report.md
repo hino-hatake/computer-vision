@@ -25,7 +25,7 @@ Dưới đây, mỗi bộ lọc sẽ được trình bày với công thức to�
 
 Lọc trung bình sử dụng một cửa sổ lọc - kernel (thường là ma trận 3×3 hoặc 5×5) chứa các giá trị bằng nhau, thực hiện phép lấy trung bình cộng của các điểm ảnh trong vùng lân cận. Đây là phương pháp làm mượt đơn giản nhất. Công thức tính toán như sau:
 
-$$
+```math
 \[
 I'(x, y) = \frac{1}{k^2} \sum_{i=-k/2}^{k/2} \sum_{j=-k/2}^{k/2} I(x+i, y+j)
 \]
@@ -34,7 +34,7 @@ Trong đó:
 - \(I(x, y)\): giá trị pixel gốc tại tọa độ \((x, y)\),
 - \(I'(x, y)\): giá trị pixel sau khi áp dụng bộ lọc,
 - \(k\): kích thước cửa sổ lọc (ví dụ: \(3 \times 3\), \(5 \times 5\)).
-$$
+```
 
 Mô hình minh họa:
 
