@@ -29,12 +29,12 @@ Lọc trung bình sử dụng một cửa sổ lọc - kernel (thường là ma 
 \[
 I'(x, y) = \frac{1}{k^2} \sum_{i=-k/2}^{k/2} \sum_{j=-k/2}^{k/2} I(x+i, y+j)
 \]
+```
 
 Trong đó:
-- \(I(x, y)\): giá trị pixel gốc tại tọa độ \((x, y)\),
-- \(I'(x, y)\): giá trị pixel sau khi áp dụng bộ lọc,
-- \(k\): kích thước cửa sổ lọc (ví dụ: \(3 \times 3\), \(5 \times 5\)).
-```
+- $$\(I(x, y)\)$$: giá trị pixel gốc tại tọa độ \((x, y)\),
+- $$\(I'(x, y)\)$$: giá trị pixel sau khi áp dụng bộ lọc,
+- $$\(k\)$$: kích thước cửa sổ lọc (ví dụ: \(3 \times 3\), \(5 \times 5\)).
 
 Mô hình minh họa:
 
