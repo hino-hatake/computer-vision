@@ -35,7 +35,13 @@ median_filtered = cv2.medianBlur(noisy, 3)
 def evaluate_metrics(original, filtered):
     return {
         "PSNR": psnr(original, filtered, data_range=255),
-        "SSIM": ssim(original, filtered, multichannel=True, data_range=255)
+        "SSIM": ssim(
+            original, 
+            filtered, 
+            channel_axis=2,  # Specify RGB channel axis
+            data_range=255,
+            win_size=3  # Use smaller window size
+        )
     }
 
 results = {
@@ -44,10 +50,24 @@ results = {
     "Median Filter": evaluate_metrics(original_rgb, median_filtered),
 }
 
-# In bảng kết quả định lượng
+# In và lưu bảng kết quả định lượng
 df = pd.DataFrame(results).T
 print("📊 Đánh giá định lượng:")
 print(df)
+
+# Lưu kết quả đánh giá vào file txt
+metrics_output = "📊 Đánh giá định lượng:\n" + df.to_string()
+with open("output/metrics_results.txt", "w", encoding="utf-8") as f:
+    f.write(metrics_output)
+
+# Lưu các ảnh đã lọc
+for name, img in {
+    "mean_filtered": mean_filtered,
+    "gaussian_filtered": gaussian_filtered,
+    "median_filtered": median_filtered
+}.items():
+    output_path = f"output/{name}.png"
+    cv2.imwrite(output_path, cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
 
 # 5. Hiển thị bảng ảnh
 def show_comparison():
