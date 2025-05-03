@@ -1,31 +1,70 @@
-# Image Filtering
+# Image Filtering Project
 
-## 🧩 1. Mã nguồn và hướng dẫn cách chạy
+## Overview
+This project implements various image filtering techniques using Python. It provides a Jupyter Notebook for interactive use, allowing users to load images, apply different filters, and visualize the results.
 
-_todo_
-
-## 📊 2. Bảng Markdown so sánh chất lượng lọc
-
-| Filter        | PSNR (dB) | SSIM  | Edge Preservation | Notes |
-|---------------|-----------|-------|-------------------|-------|
-| Mean (5x5)    | ~21.0     | ~0.70 | Kém               | Làm mượt đều, nhòe biên |
-| Gaussian (5x5)| ~23.5     | ~0.78 | Trung bình        | Cân bằng tốt giữa mượt và biên |
-| Median (5)    | ~25.2     | ~0.84 | Tốt               | Rất phù hợp với noise xung |
-| Laplacian     | NA        | NA    | Rất rõ biên       | Làm nổi bật biên sau lọc |
-
-## 📐 3. Mermaid Diagram – Image Filtering Pipeline
-
-```mermaid
-graph TD
-    A[Original Image] --> B["Add Noise (Gaussian or Salt & Pepper)"]
-    B --> C1[Mean Filter]
-    B --> C2[Gaussian Filter]
-    B --> C3[Median Filter]
-    A --> D[Laplacian Sharpening]
-    C1 --> E[Compare PSNR/SSIM]
-    C2 --> E
-    C3 --> E
-    D --> F[Edge Visualization]
-    E --> G[Final Report]
-    F --> G
+## Project Structure
 ```
+image-filtering
+├── notebooks
+│   └── image_filtering.ipynb
+├── src
+│   ├── filters
+│   │   ├── __init__.py
+│   │   ├── gaussian.py
+│   │   ├── laplacian.py
+│   │   ├── mean.py
+│   │   └── median.py
+│   ├── utils
+│   │   ├── __init__.py
+│   │   ├── image_io.py
+│   │   ├── metrics.py
+│   │   └── plotting.py
+│   └── __init__.py
+├── data
+│   ├── input
+│   │   └── sample.png
+│   └── output
+├── requirements.txt
+└── README.md
+```
+
+## Setup Instructions
+1. Clone the repository:
+   ```
+   git clone <repository-url>
+   cd image-filtering
+   ```
+
+2. Install the required packages:
+   ```
+   pip install -r requirements.txt
+   ```
+
+## Usage
+1. Open the Jupyter Notebook:
+   ```
+   jupyter notebook notebooks/image_filtering.ipynb
+   ```
+
+2. Load an image from the `data/input` directory or use the provided `sample.png`.
+
+3. Apply various filters:
+   - Gaussian Filter
+   - Laplacian Filter
+   - Mean Filter
+   - Median Filter
+
+4. Visualize the results interactively.
+
+## Filtering Techniques
+- **Gaussian Filter**: Smooths the image and reduces noise using a Gaussian kernel.
+- **Laplacian Filter**: Enhances edges by calculating the second derivative of the image.
+- **Mean Filter**: Averages the pixel values in a neighborhood to reduce noise.
+- **Median Filter**: Replaces each pixel with the median value of the neighboring pixels, effective for removing salt-and-pepper noise.
+
+## Output
+Filtered images will be saved in the `data/output` directory.
+
+## License
+This project is licensed under the MIT License.

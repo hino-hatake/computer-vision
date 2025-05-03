@@ -151,7 +151,7 @@ Tham số cụ thể lựa chọn như sau:
 
 Các bộ lọc trên sẽ được triển khai và thử nghiệm trên nhiều loại ảnh để đánh giá hiệu quả và tối ưu hóa tham số.
 
-#### Diagram
+#### Diễn giải mô hình pipeline
 
 Dưới đây là mô hình minh hoạ pipeline lọc ảnh truyền thống:
 
@@ -235,11 +235,15 @@ Tổng hợp ưu nhược điểm:
 | Median    | Giữ chi tiết, chống nhiễu xung rất hiệu quả | Tính toán chậm hơn, không tuyến tính |
 | Laplacian | Làm rõ biên, tăng cường chi tiết            | Không khử nhiễu, chỉ dùng sau lọc    |
 
-## 3 Part B: 3D Reconstruction
+## 3. Part B: 3D Reconstruction
 
 ### 3.1 Methodology
 
-Tái dựng 3D từ ảnh stereo là một kỹ thuật quan trọng trong thị giác máy tính hình học, cho phép trích xuất thông tin chiều sâu từ hai ảnh chụp cùng một cảnh từ các góc nhìn khác nhau. Quá trình này gồm ba bước chính: tính bản đồ disparity, suy ra độ sâu, và tái dựng đám mây điểm 3D.
+Tái dựng 3D từ ảnh stereo là một kỹ thuật quan trọng trong thị giác máy tính hình học, cho phép trích xuất thông tin chiều sâu từ hai ảnh chụp cùng một cảnh từ các góc nhìn khác nhau. Quá trình này gồm 4 bước chính:
+- tính bản đồ disparity
+- suy ra độ sâu
+- tái dựng đám mây điểm 3D
+- tính Fundamental Matrix và vẽ Epipolar Lines.
 
 #### 1. Tính bản đồ sai khác (Disparity Map)
 
@@ -298,7 +302,6 @@ Trong đó:
 
 Fundamental matrix (F) mô tả mối quan hệ giữa hai ảnh:
 
-
 ```math
 x'^T \cdot F \cdot x = 0
 ```
@@ -337,7 +340,7 @@ flowchart TD
 
 ### 3.2 Implementation and Results
 
-#### 3.2.1 Triển khai
+#### Triển khai
 
 Quá trình triển khai được thực hiện bằng ngôn ngữ **Python**, sử dụng các thư viện chính sau:
 
@@ -362,7 +365,7 @@ Các bước thực hiện:
     - Phát hiện đặc trưng (SIFT/ORB) và khớp điểm giữa hai ảnh.
     - Tính fundamental matrix bằng `cv2.findFundamentalMat()` và vẽ epipolar lines trên ảnh.
 
-#### 3.2.2 Kết quả
+#### Kết quả
 
 ##### 1. Disparity Map
 
@@ -479,7 +482,7 @@ Phương pháp **SGBM** vượt trội hơn về độ chính xác và chất l�
 
 Tuy nhiên, **BM** vẫn là lựa chọn tốt cho các ứng dụng thời gian thực nhờ tốc độ tính toán nhanh hơn.
 
-## 4 Part C: Image Stitching
+## 4. Part C: Image Stitching
 
 ### 4.1 Methodology
 
@@ -705,6 +708,7 @@ Thông qua ba phần của dự án, chúng ta đã khảo sát và triển khai
 Dù các phương pháp đều đạt kết quả tốt, vẫn còn nhiều hướng cải tiến như: áp dụng **adaptive filters** cho ảnh biến đổi mạnh, dùng **triangulation thực tế** với **calibration matrix** để nâng cao độ chính xác tái dựng 3D, hoặc tích hợp **multi-band blending** cho stitching mượt hơn. Những kỹ thuật truyền thống này không chỉ là nền tảng vững chắc, mà còn là bước đệm quan trọng để hiểu sâu và vận dụng hiệu quả các mô hình thị giác hiện đại.
 
 ## 6. References
+
 - OpenCV Documentation: https://docs.opencv.org/
 - NumPy Documentation: https://numpy.org/doc/stable/
 - Matplotlib Documentation: https://matplotlib.org/stable/contents.html
