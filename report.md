@@ -36,16 +36,6 @@ Trong đó:
 - $I'(x, y)$: giá trị pixel sau khi áp dụng bộ lọc,
 - $k$: kích thước cửa sổ lọc (ví dụ: 3 × 3, 5 × 5).
 
-Mô hình minh hoạ:
-
-```mermaid
-graph TD
-    A1["5×5 kernel (giá trị = 1/25)"] --> A2["Sliding Window"]
-    A2 --> A3["Tính trung bình giá trị vùng lân cận"]
-    A3 --> A4["Thay giá trị pixel trung tâm bằng trung bình"]
-    A4 --> A5["Ảnh đầu ra được làm mượt"]
-```
-
 > ⚠️ Nhược điểm: làm nhòe biên và chi tiết nhỏ.
 
 #### Bộ lọc Gaussian (Gaussian Filter)
@@ -63,16 +53,6 @@ Trong đó:
 
 Việc lựa chọn $\sigma$ và kích thước kernel ($k \times k$) cần cân nhắc giữa hiệu quả làm mịn và giữ lại chi tiết ảnh.
 
-Mô hình minh họa:
-
-```mermaid
-graph TD
-    B1["5×5 kernel (trọng số theo Gaussian)"] --> B2["Sliding Window"]
-    B2 --> B3["Tính tổng có trọng số (weight) của vùng lân cận"]
-    B3 --> B4["Giá trị gần tâm ảnh hưởng nhiều hơn"]
-    B4 --> B5["Ảnh mượt, biên mềm, giảm nhiễu Gaussian tốt"]
-```
-
 > ✅ Ưu điểm: giảm nhiễu Gaussian tốt, ít làm mờ biên hơn mean filter.
 
 #### Bộ lọc trung vị (Median Filter)
@@ -84,17 +64,6 @@ Bộ lọc trung vị thay thế giá trị của mỗi pixel bằng giá trị 
 3. Chọn giá trị trung vị làm giá trị mới cho pixel.
 
 > ✅ Ưu điểm: giữ biên tốt, loại bỏ nhiễu mạnh không làm nhòe chi tiết.
-
-Mô hình minh họa:
-
-```mermaid
-graph TD
-    C1["5×5 vùng lân cận"] --> C2["Lấy tất cả giá trị pixel xung quanh"]
-    C2 --> C3["Sắp xếp các giá trị theo thứ tự tăng dần"]
-    C3 --> C4["Chọn giá trị trung vị (median)"]
-    C4 --> C5["Gán vào pixel trung tâm"]
-    C5 --> C6["Loại bỏ nhiễu xung, giữ biên"]
-```
 
 #### Bộ lọc tăng cường biên Laplacian (Laplacian Sharpening)
 
@@ -122,16 +91,6 @@ L =
 
 Việc lựa chọn kernel phụ thuộc vào yêu cầu cụ thể của bài toán, ví dụ: nhấn mạnh biên mạnh hoặc yếu.
 
-Mô hình minh họa:
-
-```mermaid
-graph TD
-    D1["Áp dụng Laplacian kernel (2nd derivative)"] --> D2["Phát hiện vùng biến đổi mạnh (biên)"]
-    D2 --> D3["Tạo ảnh biên L"]
-    D3 --> D4["Ảnh sharpened = Ảnh gốc - α × L"]
-    D4 --> D5["Chi tiết rõ hơn, biên sắc nét hơn"]
-```
-
 > ⚠️ Không dùng để khử nhiễu, chỉ dùng sau bước lọc để làm rõ biên.
 
 #### Giải thích lựa chọn tham số
@@ -151,7 +110,7 @@ Tham số cụ thể lựa chọn như sau:
 
 Các bộ lọc trên sẽ được triển khai và thử nghiệm trên nhiều loại ảnh để đánh giá hiệu quả và tối ưu hóa tham số.
 
-#### Diễn giải mô hình pipeline
+#### Minh hoạ pipeline
 
 Dưới đây là mô hình minh hoạ pipeline lọc ảnh truyền thống:
 
@@ -161,23 +120,21 @@ flowchart TD
     B --> C1[Mean Filter<br/>→ Làm mượt toàn cục<br/>→ Nhòe biên]
     B --> C2[Gaussian Filter<br/>→ Làm mượt có trọng số<br/>→ Giữ biên tốt hơn]
     B --> C3[Median Filter<br/>→ Loại bỏ nhiễu xung<br/>→ Bảo toàn chi tiết]
-    A --> D[Laplacian Sharpening<br/>→ Phát hiện biên<br/>→ Làm rõ chi tiết]
-    C1 --> E[So sánh PSNR / SSIM]
-    C2 --> E
-    C3 --> E
+    C1 --> D[Laplacian Sharpening<br/>→ Phát hiện biên<br/>→ Làm rõ chi tiết]
+    C2 --> D[Laplacian Sharpening<br/>→ Phát hiện biên<br/>→ Làm rõ chi tiết]
+    C3 --> D[Laplacian Sharpening<br/>→ Phát hiện biên<br/>→ Làm rõ chi tiết]
+    D --> E[So sánh PSNR / SSIM]
     D --> F[Hiển thị ảnh sắc nét]
     E --> G[Đánh giá tổng hợp]
     F --> G
     G --> H[Phân tích kết quả]
     H --> I[Kết luận]
-    I --> J[Đề xuất mở rộng]
-    J --> K[Hướng nghiên cứu tiếp theo]
 ```
 
 Mô tả:
 
 - C1, C2, C3: thể hiện 3 nhánh khử nhiễu
-- D: nhánh tăng cường biên, tách biệt khỏi khử nhiễu
+- D: tăng cường biên sau khử nhiễu
 - G: điểm cuối để tổng hợp kết quả định lượng và định tính
 - H: phân tích kết quả, đưa ra nhận xét và so sánh giữa các bộ lọc
 - I: kết luận về hiệu quả của từng bộ lọc
@@ -199,16 +156,14 @@ Chi tiết triển khai:
 
 Kết quả trực quan:
 
-_chèn ảnh vào đây sau._
+![result-1](/image-filtering-simple/result-1.png)
 
-**Hình 1:** Từ trái sang phải, trên xuống dưới:
+**Hình 1:** Từ trái sang phải, đối với từng filter lọc nhiễu:
 
 1. Ảnh gốc (Original)
 2. Ảnh có nhiễu (Noisy)
-3. Lọc trung bình (Mean Filter)
-4. Lọc Gaussian (Gaussian Filter)
-5. Lọc trung vị (Median Filter)
-6. Tăng cường biên Laplacian (Sharpened Image)
+3. Ảnh đã lọc nhiễu (Filtered)
+4. Ảnh đã kết hợp tăng cường biên Laplacian (Filtered + Sharpened)
 
 ### 2.3 Comparative Analysis
 
@@ -221,10 +176,12 @@ Kết quả so sánh:
 
 | Bộ lọc         | PSNR (dB) | SSIM | Nhận xét định tính                           |
 | -------------- | --------- | ---- | -------------------------------------------- |
-| Mean (5×5)     | 21.2      | 0.72 | Làm mượt tốt nhưng làm nhòe biên và chi tiết |
-| Gaussian (5×5) | 23.8      | 0.79 | Giảm nhiễu hiệu quả, giữ biên khá tốt        |
-| Median (5)     | 25.6      | 0.85 | Loại nhiễu xung rất tốt, giữ chi tiết        |
-| Laplacian      | –         | –    | Làm rõ biên, không khử nhiễu                 |
+| Mean (5×5)     | 21.743571      | 0.592016 | Làm mượt tốt nhưng làm nhòe biên và chi tiết |
+| Gaussian (5×5) | 22.213147      | 0.604755 | Giảm nhiễu hiệu quả, giữ biên khá tốt        |
+| Median (5)     | 29.303014      | 0.977154 | Loại nhiễu xung rất tốt, giữ chi tiết        |
+| Mean + Laplacian      | 18.760735         | 0.714028    | Chất lượng giảm nhiễu giảm, chi tiết gốc tăng                 |
+| Gaussian + Laplacian      | 19.207534         | 0.710447    | Tương tự Mean +  Laplacian                |
+| Median + Laplacian      | 19.922373         | 0.944025    | Chất lượng giảm nhiễu giảm mạnh, chi tiết gốc cũng giảm -> ko bằng so với trước khi áp dụng tăng cường biên                 |
 
 Tổng hợp ưu nhược điểm:
 
