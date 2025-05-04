@@ -1,4 +1,4 @@
-# Midterm Project Report
+# Học vu vơ Computer Vision
 
 ## 1. Introduction
 
@@ -286,9 +286,9 @@ flowchart TD
     B1 --> B2[Tính chiều sâu Z]
     B2 --> B3[Tái dựng point cloud]
 
-    A --> C1["Phát hiện đặc trưng (SIFT/ORB)"]
+    A --> C1["Phát hiện đặc trưng <br/> (SIFT/ORB)"]
     C1 --> C2["Match điểm ảnh"]
-    C2 --> C3["Tính fundamental matrix<br/>(RANSAC)"]
+    C2 --> C3["Tính fundamental matrix <br/> (RANSAC)"]
     C3 --> C4["Vẽ epipolar lines"]
 
     B3 --> D[Tái dựng không gian 3D]
@@ -338,13 +338,17 @@ Bản đồ disparity hiển thị rõ các vùng có chiều sâu khác nhau �
 
 **Hình 1.2:** Disparity map được tính bằng StereoSGBM, block size = 5, numDisparities = 64.
 
+Nhận xét:
+1. **BM**: Disparity map có nhiều vùng nhiễu, đặc biệt ở các vùng texture thấp.
+2. **SGBM**: Disparity map mượt hơn, biên vật thể rõ ràng hơn.
+
 ##### 2. Point Cloud
 
 Đám mây điểm 3D được tái dựng từ disparity map và hiển thị bằng Open3D.
 
 ![point_cloud](/3d-reconstruction/output/point_cloud_visualization.png)
 
-**Hình 2:** 3D Point cloud dựng từ disparity và ảnh trái.
+**Hình 2:** 3D Point cloud dựng từ disparity map và ảnh trái.
 
 ##### 3. Epipolar Lines
 
@@ -358,7 +362,7 @@ Epipolar lines được vẽ trên cặp ảnh stereo từ ma trận F với cá
 
 **Hình 4:** Epipolar lines trên ảnh phải.
 
-#### Tổng kết
+#### Nhật xét tổng quan
 
 - **Disparity map** cho thấy rõ sự khác biệt về chiều sâu giữa các vật thể trong ảnh.
 - **Point cloud** cung cấp biểu diễn 3D trực quan của cảnh.
@@ -372,55 +376,30 @@ Kết quả cho thấy các kỹ thuật tái dựng 3D từ ảnh stereo hoạt
 
 Để so sánh hai phương pháp tính disparity map là **Block Matching (BM)** và **Semi-Global Block Matching (SGBM)**, ta sử dụng các chỉ số định lượng sau:
 
-1. **Số lượng điểm hợp lệ (Valid Points)**: Số lượng điểm disparity có giá trị hợp lệ (khác -1).
-2. **Độ mượt (Smoothness)**: Đánh giá mức độ mượt mà của disparity map.
-3. **Thời gian tính toán (Runtime)**: Thời gian thực hiện tính disparity map.
+- **Số lượng điểm hợp lệ (Valid Points)**: Số lượng điểm disparity có giá trị hợp lệ (khác -1).
+
+Và định tính:
+- **Độ mượt (Smoothness)**: Đánh giá mức độ mượt mà của disparity map.
+- **Nhiễu (Artifacts)**: Thời gian thực hiện tính disparity map.
 
 Kết quả được trình bày trong bảng sau:
 
-| Phương pháp | Valid Points (%) | Smoothness (PSNR) | Runtime (ms) | Nhận xét                 |
+| Phương pháp | Valid Points (%) | Smoothness | Artifacts | Nhận xét                 |
 |-------------|------------------|-------------------|--------------|--------------------------|
-| BM          | 85.3            | 22.1              | 45           | Nhanh, nhưng nhiều nhiễu |
-| SGBM        | 92.7            | 28.4              | 120          | Chính xác, mượt hơn      |
+| BM          | 106896            | Xuất hiện nhiều bậc thang, đặc biệt ở biên vật thể              | Thường xuyên xuất hiện nhiễu ở vùng phẳng           | Nhanh, nhưng nhiều nhiễu |
+| SGBM        | 132372            | Disparity map mượt hơn, ít răng cưa              | Ít nhiễu hơn, nhờ tích hợp thông tin toàn cục          | Chính xác, mượt hơn      |
 
 #### Qualitative Comparison
 
-- **Block Matching (BM)**:
-    - Ưu điểm: Tính toán nhanh, phù hợp với các ứng dụng thời gian thực.
-    - Nhược điểm: Disparity map có nhiều nhiễu, đặc biệt ở các vùng texture thấp hoặc biên vật thể.
+**Block Matching (BM)**:
+- Ưu điểm: Tính toán nhanh, phù hợp với các ứng dụng thời gian thực.
+- Nhược điểm: Disparity map có nhiều nhiễu, đặc biệt ở các vùng texture thấp hoặc biên vật thể.
 
-- **Semi-Global Block Matching (SGBM)**:
-    - Ưu điểm: Disparity map mượt hơn, ít nhiễu hơn, đặc biệt ở các vùng phẳng hoặc biên.
-    - Nhược điểm: Thời gian tính toán lâu hơn, yêu cầu tài nguyên cao hơn.
+**Semi-Global Block Matching (SGBM)**:
+- Ưu điểm: Disparity map mượt hơn, ít nhiễu hơn, đặc biệt ở các vùng phẳng hoặc biên.
+- Nhược điểm: Thời gian tính toán lâu hơn, yêu cầu tài nguyên cao hơn.
 
-#### Visual Comparison
-
-Hình ảnh minh họa disparity map từ hai phương pháp:
-
-1. **BM**: Disparity map có nhiều vùng nhiễu, đặc biệt ở các vùng texture thấp.
-2. **SGBM**: Disparity map mượt hơn, biên vật thể rõ ràng hơn.
-
-```python
-# BM
-stereo_bm = cv2.StereoBM_create(numDisparities=16, blockSize=15)
-disparity_bm = stereo_bm.compute(img_left, img_right)
-
-# SGBM
-stereo_sgbm = cv2.StereoSGBM_create(numDisparities=16, blockSize=15)
-disparity_sgbm = stereo_sgbm.compute(img_left, img_right)
-
-# Visualization
-plt.subplot(1, 2, 1)
-plt.imshow(disparity_bm, cmap='plasma')
-plt.title("BM Disparity Map")
-
-plt.subplot(1, 2, 2)
-plt.imshow(disparity_sgbm, cmap='plasma')
-plt.title("SGBM Disparity Map")
-plt.show()
-```
-
-#### Conclusion
+#### Nhật xét tổng quan
 
 Phương pháp **SGBM** vượt trội hơn về độ chính xác và chất lượng disparity map, đặc biệt trong các ứng dụng yêu cầu độ mượt và ít nhiễu.
 
