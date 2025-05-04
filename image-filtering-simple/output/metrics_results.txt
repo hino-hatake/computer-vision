@@ -1,0 +1,8 @@
+📊 Đánh giá định lượng (bao gồm sharpening):
+                            PSNR      SSIM  Edge Map F1
+Mean Filter            15.956913  0.251954     0.321202
+Gaussian Filter        15.946790  0.208311     0.225146
+Median Filter          21.916854  0.932627     0.642437
+Mean + Sharpening      11.875409  0.138772     0.150075
+Gaussian + Sharpening  11.094528  0.169049     0.155223
+Median + Sharpening    18.631318  0.859704     0.357871

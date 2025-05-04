@@ -4,16 +4,18 @@
 
 ```sh
 # tạo môi trường ảo
-python -m venv venv
+python -m venv 3drecon
 # source venv/bin/activate
-source venv/Scripts/activate
+source 3drecon/Scripts/activate
 # deactivate
 
-# cài thư viện
-pip install -r requirements.txt
+# Cài đặt ipykernel và jupyter
+pip install ipykernel jupyter
 
-# run
-python filter-image.py
+# B4. Đăng ký venv như một kernel riêng biệt
+python -m ipykernel install --user --name=3drecon --display-name "Python (3drecon)"
+
+# run jupyter notebook
 ```
 
 ## Flow
@@ -39,6 +41,10 @@ flowchart TD
 
 Hai ảnh của cùng một cảnh được chụp bởi hai camera hoặc một camera dịch ngang. Ví dụ: mắt trái và mắt phải nhìn một vật.
 
+Nguồn ảnh:
+- https://vision.middlebury.edu/stereo/data/
+- https://vision.middlebury.edu/stereo/data/scenes2003/newdata/teddy/
+
 ### Disparity Map (bản đồ chênh lệch)
 
 - Mỗi pixel trong ảnh trái sẽ có một pixel tương ứng trong ảnh phải.
@@ -46,7 +52,7 @@ Hai ảnh của cùng một cảnh được chụp bởi hai camera hoặc một
 - Disparity càng lớn ⇒ vật càng gần (giống nguyên lý mắt người).
 
 Được tính bằng:
-- **Block Matching**: tìm khối nhỏ giống nhau giữa 2 ảnh
+- **BM (Block Matching)**: tìm khối nhỏ giống nhau giữa 2 ảnh
 - **SGBM (Semi-Global Block Matching)**: thuật toán cải tiến, mượt hơn, chính xác hơn block matching
 
 ### 3D Point Cloud (đám mây điểm 3D)

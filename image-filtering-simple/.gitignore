@@ -18,5 +18,5 @@ venv/
 .DS_Store
 
 # Output folders
-output/
+# output/
 *.log
