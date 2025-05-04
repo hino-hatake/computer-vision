@@ -26,7 +26,7 @@ B --> D[Tăng cường biên]
 D --> E[Đánh giá lần 2]
 ```
 
-## Guideline
+## Kiến thức nền cần nắm
 
 ### PSNR (Peak Signal-to-Noise Ratio)
 
