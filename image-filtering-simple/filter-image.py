@@ -5,22 +5,28 @@ from skimage.util import random_noise
 from skimage.metrics import peak_signal_noise_ratio as psnr, structural_similarity as ssim
 import pandas as pd
 import os
+from sklearn.metrics import f1_score  # Import thêm F1-score từ sklearn
 
 # Tạo thư mục output nếu chưa có
 os.makedirs("output", exist_ok=True)
 
-# 1. Đọc ảnh gốc
+# 1. Đọc ảnh gốc và thêm nhiễu
 original = cv2.imread("input/sample.png", cv2.IMREAD_COLOR)
 original_rgb = cv2.cvtColor(original, cv2.COLOR_BGR2RGB)
-plt.imshow(original_rgb)
-plt.title("Original Image")
-plt.axis("off")
-plt.show()
 
-# 2. Thêm nhiễu Salt & Pepper
+# Thêm nhiễu Salt & Pepper
 noisy = random_noise(original_rgb, mode='s&p', amount=0.25)
 noisy = np.array(255 * noisy, dtype=np.uint8)
 cv2.imwrite("output/noisy.png", cv2.cvtColor(noisy, cv2.COLOR_RGB2BGR))
+
+# Hiển thị ảnh gốc và ảnh nhiễu cạnh nhau
+plt.figure(figsize=(12, 4))
+plt.subplot(121)
+plt.imshow(original_rgb)
+plt.title("Original Image")
+plt.axis("off")
+
+plt.subplot(122)
 plt.imshow(noisy)
 plt.title("Noisy Image (Salt & Pepper)")
 plt.axis("off")
@@ -31,7 +37,28 @@ mean_filtered = cv2.blur(noisy, (5, 5))
 gaussian_filtered = cv2.GaussianBlur(noisy, (5, 5), sigmaX=1)
 median_filtered = cv2.medianBlur(noisy, 5)
 
-# 4. Tính PSNR & SSIM
+# Hàm tính Edge Map F1
+def edge_map_f1_score(original, filtered):
+    # Chuyển ảnh sang grayscale
+    original_gray = cv2.cvtColor(original, cv2.COLOR_RGB2GRAY)
+    filtered_gray = cv2.cvtColor(filtered, cv2.COLOR_RGB2GRAY)
+    
+    # Áp dụng Canny Edge Detection
+    edges_original = cv2.Canny(original_gray, 100, 200)
+    edges_filtered = cv2.Canny(filtered_gray, 100, 200)
+    
+    # Chuẩn hóa giá trị bản đồ biên về 0 và 1
+    edges_original_binary = (edges_original > 0).astype(np.uint8)
+    edges_filtered_binary = (edges_filtered > 0).astype(np.uint8)
+    
+    # Flatten edges để tính F1-score
+    edges_original_flat = edges_original_binary.flatten()
+    edges_filtered_flat = edges_filtered_binary.flatten()
+    
+    # Tính F1-score
+    return f1_score(edges_original_flat, edges_filtered_flat, average='binary')
+
+# 4. Tính PSNR, SSIM và Edge Map F1
 def evaluate_metrics(original, filtered):
     return {
         "PSNR": psnr(original, filtered, data_range=255),
@@ -41,7 +68,8 @@ def evaluate_metrics(original, filtered):
             channel_axis=2,  # Specify RGB channel axis
             data_range=255,
             win_size=3  # Use smaller window size
-        )
+        ),
+        "Edge Map F1": edge_map_f1_score(original, filtered)
     }
 
 results = {
@@ -67,16 +95,18 @@ for name, img in {
     "median_filtered": median_filtered
 }.items():
     output_path = f"output/{name}.png"
-    cv2.imwrite(output_path, cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
+    # Đảm bảo ảnh ở định dạng uint8
+    img_uint8 = np.array(img, dtype=np.uint8)
+    cv2.imwrite(output_path, cv2.cvtColor(img_uint8, cv2.COLOR_RGB2BGR))
 
 # 4. Áp dụng Laplacian sharpening cho các ảnh đã lọc
-def apply_laplacian_sharpening(image):
+def apply_laplacian_sharpening(image, kernel_size=3, alpha=0.7):
     # Tạo kernel Laplacian
-    laplacian = cv2.Laplacian(image, cv2.CV_64F)
+    laplacian = cv2.Laplacian(image, cv2.CV_64F, ksize=kernel_size)
     # Chuyển về uint8 và lấy giá trị tuyệt đối
     laplacian = np.uint8(np.absolute(laplacian))
-    # Cộng với ảnh gốc để tăng cường biên
-    sharpened = cv2.addWeighted(image, 1.5, laplacian, -0.5, 0)
+    # Cộng với ảnh gốc để tăng cường biên với trọng số alpha
+    sharpened = cv2.addWeighted(image, 1.0, laplacian, -alpha, 0)
     return sharpened
 
 # Áp dụng sharpening và tính metrics
@@ -89,15 +119,18 @@ for name, filtered_img in {
     "Median": median_filtered
 }.items():
     # Áp dụng sharpening
-    sharpened = apply_laplacian_sharpening(filtered_img)
+    sharpened = apply_laplacian_sharpening(filtered_img, kernel_size=3, alpha=0.7)
     sharpened_images[f"{name}_sharpened"] = sharpened
     
     # Tính metrics cho ảnh đã sharpening
     sharpened_results[f"{name} + Sharpening"] = evaluate_metrics(original_rgb, sharpened)
     
-    # Lưu ảnh đã sharpening
-    output_path = f"output/{name.lower()}_sharpened.png"
-    cv2.imwrite(output_path, cv2.cvtColor(sharpened, cv2.COLOR_RGB2BGR))
+# Lưu ảnh đã sharpening
+for name, sharpened_img in sharpened_images.items():
+    output_path = f"output/{name.lower()}.png"
+    # Đảm bảo ảnh ở định dạng uint8
+    sharpened_img_uint8 = np.array(sharpened_img, dtype=np.uint8)
+    cv2.imwrite(output_path, cv2.cvtColor(sharpened_img_uint8, cv2.COLOR_RGB2BGR))
 
 # Cập nhật bảng kết quả với cả metrics của ảnh đã sharpening
 all_results = {**results, **sharpened_results}

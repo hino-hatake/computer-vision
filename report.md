@@ -1,3 +1,11 @@
+Name: Nguyễn Huyền Anh
+
+Student ID: 21070228
+
+Email: huyenem2209@gmail.com
+
+Date: 2025-05-01
+
 # Midterm Project Report
 
 ## 1. Introduction
@@ -353,10 +361,6 @@ pcd.points = o3d.utility.Vector3dVector(points_3d)
 o3d.visualization.draw_geometries([pcd], window_name="Point Cloud")
 ```
 
-_thả ảnh vào đây_
-
-**Hình 2:** Đám mây điểm 3D hiển thị bằng Open3D.
-
 ##### 3. Epipolar Lines
 
 Epipolar lines được vẽ trên cặp ảnh stereo để minh họa mối quan hệ hình học giữa các điểm tương ứng.
@@ -669,14 +673,17 @@ Dù các phương pháp đều đạt kết quả tốt, vẫn còn nhiều hư�
 - OpenCV Documentation: https://docs.opencv.org/
 - NumPy Documentation: https://numpy.org/doc/stable/
 - Matplotlib Documentation: https://matplotlib.org/stable/contents.html
-- Digital Image Processing by Rafael C. Gonzalez and Richard E. Woods
-- Computer Vision: Algorithms and Applications by Richard Szeliski
-- Vision and Image Processing by David F. DeMenthon and David M. Mount
-- Image Processing Handbook by John C. Russ
-- Practical Python and OpenCV + Case Studies by Adrian Rosebrock
-- Learning OpenCV 3 by Adrian Kaehler and Gary Bradski
-- OpenCV-Python Tutorials: https://opencv-python-tutroals.readthedocs.io/en/latest/index.html
+- Bradski, G., & Kaehler, A. (2008). Learning OpenCV: Computer Vision with the OpenCV Library. O’Reilly Media, Inc.
+- OpenCV Documentation. (n.d.). Image Filtering. Retrieved from: https://docs.opencv.org/4.x/d4/d13/tutorial_py_filtering.html
+- Gonzalez, R. C., & Woods, R. E. (2018). Digital Image Processing (4th ed.). Pearson.
+- OpenCV Documentation. (n.d.). Stereo Matching Algorithms (BM, SGBM). Retrieved from: https://docs.opencv.org/4.x/dd/d53/tutorial_py_depthmap.html
+- OpenCV Documentation. (n.d.). Feature Detection and Matching (ORB, SIFT). Retrieved from: https://docs.opencv.org/4.x/dc/dc3/tutorial_py_matcher.html
+- Scikit-Image Documentation. (n.d.). Peak Signal-to-Noise Ratio (PSNR). Retrieved from: https://scikit-image.org/docs/stable/api/skimage.metrics.html#skimage.metrics.peak_signal_noise_ratio
+- Scikit-Image Documentation. (n.d.). Structural Similarity Index (SSIM). Retrieved from: https://scikit-image.org/docs/stable/api/skimage.metrics.html#skimage.metrics.structural_similarity
+- Open3D Documentation. (n.d.). Point Cloud Processing. Retrieved from: http://www.open3d.org/docs/latest/tutorial/Basic/index.html
+- Zhang, Z. (1999). A flexible new technique for camera calibration. IEEE Transactions on Pattern Analysis and Machine Intelligence, 22(11), 1330-1334.
+- Hartley, R., & Zisserman, A. (2004). Multiple View Geometry in Computer Vision (2nd ed.). Cambridge University Press.
 
 ## A Appendix: Python Code
 
-_Tính sau, có thể gửi link google colab_
+Phần source code cho 3 bài A, B, C sẽ được đính kèm trong file zip.
