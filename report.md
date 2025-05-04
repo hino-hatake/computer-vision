@@ -1,11 +1,3 @@
-Name: Nguyễn Huyền Anh
-
-Student ID: 21070228
-
-Email: huyenem2209@gmail.com
-
-Date: 2025-05-01
-
 # Midterm Project Report
 
 ## 1. Introduction
@@ -290,13 +282,13 @@ Tổng hợp lại, ta có sơ đồ minh họa sau:
 
 ```mermaid
 flowchart TD
-    A["Ảnh stereo (trái & phải)"] --> B1["Tính disparity map\n(StereoBM/SGBM)"]
+    A["Ảnh stereo (trái & phải)"] --> B1["Tính disparity map<br/>(StereoBM/SGBM)"]
     B1 --> B2[Tính chiều sâu Z]
     B2 --> B3[Tái dựng point cloud]
 
     A --> C1["Phát hiện đặc trưng (SIFT/ORB)"]
     C1 --> C2["Match điểm ảnh"]
-    C2 --> C3["Tính fundamental matrix\n(RANSAC)"]
+    C2 --> C3["Tính fundamental matrix<br/>(RANSAC)"]
     C3 --> C4["Vẽ epipolar lines"]
 
     B3 --> D[Tái dựng không gian 3D]
@@ -336,44 +328,35 @@ Các bước thực hiện:
 
 Hình ảnh disparity map được tính từ cặp ảnh stereo. Các vùng sáng biểu thị các vật thể gần camera, trong khi các vùng tối biểu thị các vật thể xa hơn.
 
-```python
-# Tính disparity map
-stereo = cv2.StereoBM_create(numDisparities=16, blockSize=15)
-disparity = stereo.compute(img_left, img_right)
-plt.imshow(disparity, cmap='plasma')
-plt.title("Disparity Map")
-plt.colorbar()
-plt.show()
-```
+Bản đồ disparity hiển thị rõ các vùng có chiều sâu khác nhau — vùng gần camera sẽ có disparity cao hơn (màu sáng), trong khi các vật thể ở xa sẽ có disparity thấp hơn (màu tối).
 
-_thả ảnh vào đây_
+![disparity_map](/3d-reconstruction/output/disparity_map_bm.png)
 
-**Hình 1:** Disparity map từ ảnh stereo.
+**Hình 1.1:** Disparity map được tính bằng StereoBM, block size = 5, numDisparities = 64.
+
+![disparity_map](/3d-reconstruction/output/disparity_map_sgbm.png)
+
+**Hình 1.2:** Disparity map được tính bằng StereoSGBM, block size = 5, numDisparities = 64.
 
 ##### 2. Point Cloud
 
 Đám mây điểm 3D được tái dựng từ disparity map và hiển thị bằng Open3D.
 
-```python
-# Tái dựng đám mây điểm
-pcd = o3d.geometry.PointCloud()
-pcd.points = o3d.utility.Vector3dVector(points_3d)
-o3d.visualization.draw_geometries([pcd], window_name="Point Cloud")
-```
+![point_cloud](/3d-reconstruction/output/point_cloud_visualization.png)
+
+**Hình 2:** 3D Point cloud dựng từ disparity và ảnh trái.
 
 ##### 3. Epipolar Lines
 
-Epipolar lines được vẽ trên cặp ảnh stereo để minh họa mối quan hệ hình học giữa các điểm tương ứng.
+Epipolar lines được vẽ trên cặp ảnh stereo từ ma trận F với các cặp điểm đã match, để minh họa mối quan hệ hình học giữa các điểm tương ứng.
 
-```python
-# Vẽ epipolar lines
-lines1, lines2 = cv2.computeCorrespondEpilines(points2, 2, F)
-draw_epipolar_lines(img_left, img_right, lines1, points1)
-```
+![epipolar_lines_left](/3d-reconstruction/output/epipolar_lines_left.png)
 
-_thả ảnh vào đây_
+**Hình 3:** Epipolar lines trên ảnh trái.
 
-**Hình 3:** Epipolar lines trên ảnh trái và phải.
+![epipolar_lines_right](/3d-reconstruction/output/epipolar_lines_right.png)
+
+**Hình 4:** Epipolar lines trên ảnh phải.
 
 #### Tổng kết
 
